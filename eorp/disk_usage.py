@@ -76,7 +76,7 @@ class DiskUsage:
 
     def format_file_size(
             self, path: Path, size: int, suppress_print: bool = False
-    ) -> int:
+    ) -> None:
         """
         Formats the file size in a human-readable format or bytes and prints it.
 
@@ -112,7 +112,7 @@ class DiskUsage:
         else:
             print(output)
 
-    def calc_disk_usage(self, path: Path, is_top_level: bool = True) -> str:
+    def calc_disk_usage(self, path: Path, is_top_level: bool = True) -> int:
         """
         Calculates the disk usage of a file or directory and prints the size if is_top_level is True.
 
@@ -156,8 +156,8 @@ class DiskUsage:
             elif size >= KIBIBYTE:
                 return f"{size / KIBIBYTE:.1f}K"
             else:
-                return f"{size}"
-        return f"{size}"
+                return size
+        return size
 
     @staticmethod
     def main():
