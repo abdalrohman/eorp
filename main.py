@@ -467,6 +467,8 @@ def flash_device(fastboot: Path, flash: List[str]) -> None:
     if not fastboot.is_file():
         sys.exit(1)
 
+    working_dir = os.getcwd()
+
     # Flash partitions
     choose_part = list_folder(build_dir)
     if choose_part is not None:
@@ -474,13 +476,15 @@ def flash_device(fastboot: Path, flash: List[str]) -> None:
         print("Choose a/all to flash all partitions.")
         ans = input("Enter partition: ")
         if ans not in ("a", "all"):
-            part = build_dir / f"{choose_part[int(ans)]}"
-            run_command([fastboot, "flash", str(choose_part[int(ans)]).removesuffix(".img"), part], verbose=True,
+            run_command([fastboot, "flash", str(choose_part[int(ans)]).removesuffix(".img"),
+                        os.path.relpath(os.path.join(build_dir, f"{choose_part[int(ans)]}"), working_dir)],
+                        verbose=True,
                         stdout=sys.stdout)
         else:
             for part in partitions:
                 for path in Path(build_dir).rglob(f"{part}.img"):
-                    run_command([fastboot, "flash", part, str(path)], verbose=True, stdout=sys.stdout)
+                    run_command([fastboot, "flash", part, str(os.path.relpath(path, working_dir))], 
+                                verbose=True, stdout=sys.stdout)
 
     # Install boot and dtbo if 'r' is present in flash list
     ans = input("Do you want to install boot and dtbo? [y/n]: ")
